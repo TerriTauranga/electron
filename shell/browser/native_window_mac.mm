@@ -722,6 +722,10 @@ void NativeWindowMac::SetExitingFullScreen(bool flag) {
   exiting_fullscreen_ = flag;
 }
 
+void NativeWindowMac::SetEnteringFullScreen(bool flag) {
+  entering_fullscreen_ = flag;
+}
+
 void NativeWindowMac::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},

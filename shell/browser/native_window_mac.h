@@ -154,6 +154,7 @@ class NativeWindowMac : public NativeWindow, public ui::NativeThemeObserver {
   // Custom traffic light positioning
   void RedrawTrafficLights() override;
   void SetExitingFullScreen(bool flag);
+  void SetEnteringFullScreen(bool flag);
   void SetTrafficLightPosition(const gfx::Point& position) override;
   gfx::Point GetTrafficLightPosition() const override;
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
@@ -178,6 +179,7 @@ class NativeWindowMac : public NativeWindow, public ui::NativeThemeObserver {
   bool fullscreen_window_title() const { return fullscreen_window_title_; }
   bool always_simple_fullscreen() const { return always_simple_fullscreen_; }
   bool exiting_fullscreen() const { return exiting_fullscreen_; }
+  bool entering_fullscreen() const { return entering_fullscreen_; }
 
  protected:
   // views::WidgetDelegate:
@@ -215,6 +217,7 @@ class NativeWindowMac : public NativeWindow, public ui::NativeThemeObserver {
   bool fullscreen_window_title_ = false;
   bool resizable_ = true;
   bool exiting_fullscreen_ = false;
+  bool entering_fullscreen_ = false;
   gfx::Point traffic_light_position_;
 
   NSInteger attention_request_id_ = 0;  // identifier from requestUserAttention

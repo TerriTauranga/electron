@@ -224,6 +224,18 @@ bool ScopedDisableResize::disable_resize_ = false;
     shell_->SetSimpleFullScreen(!is_simple_fs);
   } else {
     bool maximizable = shell_->IsMaximizable();
+
+    // [NSWindow -toggleFullScreen] is an asynchronous operation, which means
+    // that it's possible to call it while a fullscreen transition is currently
+    // in process. This can create weird behavior (incl. phantom windows),
+    // so we want to block the operation until any current transitions have
+    // completed.
+    while (shell_->entering_fullscreen() || shell_->exiting_fullscreen()) {
+      [[NSRunLoop currentRunLoop]
+             runMode:NSDefaultRunLoopMode
+          beforeDate:[NSDate dateWithTimeIntervalSinceNow:.5]];
+    }
+
     [super toggleFullScreen:sender];
 
     // Exiting fullscreen causes Cocoa to redraw the NSWindow, which resets

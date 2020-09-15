@@ -211,6 +211,8 @@ using TitleBarStyle = electron::NativeWindowMac::TitleBarStyle;
 }
 
 - (void)windowWillEnterFullScreen:(NSNotification*)notification {
+  shell_->SetEnteringFullScreen(true);
+
   // Setting resizable to true before entering fullscreen
   is_resizable_ = shell_->IsResizable();
   shell_->SetResizable(true);
@@ -223,6 +225,8 @@ using TitleBarStyle = electron::NativeWindowMac::TitleBarStyle;
 }
 
 - (void)windowDidEnterFullScreen:(NSNotification*)notification {
+  shell_->SetEnteringFullScreen(false);
+
   shell_->NotifyWindowEnterFullScreen();
 
   // For frameless window we don't show set title for normal mode since the
@@ -254,6 +258,8 @@ using TitleBarStyle = electron::NativeWindowMac::TitleBarStyle;
 }
 
 - (void)windowWillExitFullScreen:(NSNotification*)notification {
+  shell_->SetExitingFullScreen(true);
+
   // Restore the titlebar visibility.
   NSWindow* window = shell_->GetNativeWindow().GetNativeNSWindow();
   if ((shell_->transparent() || !shell_->has_frame()) &&
@@ -267,16 +273,16 @@ using TitleBarStyle = electron::NativeWindowMac::TitleBarStyle;
     shell_->SetStyleMask(false, NSWindowStyleMaskFullSizeContentView);
     [window setTitlebarAppearsTransparent:YES];
   }
-  shell_->SetExitingFullScreen(true);
   if (shell_->title_bar_style() == TitleBarStyle::HIDDEN) {
     shell_->RedrawTrafficLights();
   }
 }
 
 - (void)windowDidExitFullScreen:(NSNotification*)notification {
+  shell_->SetExitingFullScreen(false);
+
   shell_->SetResizable(is_resizable_);
   shell_->NotifyWindowLeaveFullScreen();
-  shell_->SetExitingFullScreen(false);
   if (shell_->title_bar_style() == TitleBarStyle::HIDDEN) {
     shell_->RedrawTrafficLights();
   }
