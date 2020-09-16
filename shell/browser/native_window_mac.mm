@@ -796,9 +796,28 @@ bool NativeWindowMac::IsMinimized() {
   return [window_ isMiniaturized];
 }
 
+void NativeWindowMac::HandlePendingFullscreenTransitions() {
+  if (!pending_transitions_.size())
+    return;
+
+  const auto& next_transition = pending_transitions_.front();
+  pending_transitions_.erase(pending_transitions_.begin());
+
+  SetFullScreen(next_transition);
+}
+
 void NativeWindowMac::SetFullScreen(bool fullscreen) {
   if (fullscreen == IsFullscreen())
     return;
+
+  // [NSWindow -toggleFullScreen] is an asynchronous operation, which means
+  // that it's possible to call it while a fullscreen transition is currently
+  // in process. This can create weird behavior (incl. phantom windows),
+  // so we want to schedule a transition for when the current one has completed.
+  if (entering_fullscreen() || exiting_fullscreen()) {
+    pending_transitions_.push_back(fullscreen);
+    return;
+  }
 
   // Take note of the current window size
   if (IsNormal())

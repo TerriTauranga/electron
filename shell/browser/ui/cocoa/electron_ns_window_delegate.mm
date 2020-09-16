@@ -255,6 +255,8 @@ using TitleBarStyle = electron::NativeWindowMac::TitleBarStyle;
     [window setTitlebarAppearsTransparent:NO];
     shell_->SetStyleMask(true, NSWindowStyleMaskFullSizeContentView);
   }
+
+  shell_->HandlePendingFullscreenTransitions();
 }
 
 - (void)windowWillExitFullScreen:(NSNotification*)notification {
@@ -286,6 +288,8 @@ using TitleBarStyle = electron::NativeWindowMac::TitleBarStyle;
   if (shell_->title_bar_style() == TitleBarStyle::HIDDEN) {
     shell_->RedrawTrafficLights();
   }
+
+  shell_->HandlePendingFullscreenTransitions();
 }
 
 - (void)windowWillClose:(NSNotification*)notification {

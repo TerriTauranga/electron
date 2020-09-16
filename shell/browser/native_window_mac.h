@@ -151,10 +151,13 @@ class NativeWindowMac : public NativeWindow, public ui::NativeThemeObserver {
   void SetCollectionBehavior(bool on, NSUInteger flag);
   void SetWindowLevel(int level);
 
-  // Custom traffic light positioning
-  void RedrawTrafficLights() override;
+  // Handle fullscreen transitions.
   void SetExitingFullScreen(bool flag);
   void SetEnteringFullScreen(bool flag);
+  void HandlePendingFullscreenTransitions();
+
+  // Custom traffic light positioning.
+  void RedrawTrafficLights() override;
   void SetTrafficLightPosition(const gfx::Point& position) override;
   gfx::Point GetTrafficLightPosition() const override;
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
@@ -218,6 +221,7 @@ class NativeWindowMac : public NativeWindow, public ui::NativeThemeObserver {
   bool resizable_ = true;
   bool exiting_fullscreen_ = false;
   bool entering_fullscreen_ = false;
+  std::vector<bool> pending_transitions_;
   gfx::Point traffic_light_position_;
 
   NSInteger attention_request_id_ = 0;  // identifier from requestUserAttention
